@@ -21,7 +21,7 @@ An interactive typewriter web application built with React, TypeScript, and Vite
 - **Numbers**: 0-9
 - **Special Characters**: `-`, `=`, `[`, `;`, `:`, `'`, `>`, `<`, `/`
 - **Function Keys**: Space, Enter, Tab, Caps Lock, Shift
-- **NOTE**: no backspace. this is real authenticity.
+- **NOTE**: no backspace. 100% authentic experience
 
 ## Tech Stack
 
