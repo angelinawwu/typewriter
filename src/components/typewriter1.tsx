@@ -153,7 +153,7 @@ const Typewriter1 = () => {
     const totalLines = textLines.reduce((count, line) => {
       // Estimate wrapped lines based on character count
       // Adjust the divisor based on your text container width
-      const charsPerLine = 50; // approximate chars that fit per line
+      const charsPerLine = 30; // approximate chars that fit per line
       const wrappedLines = Math.ceil(line.length / charsPerLine) || 1;
       return count + wrappedLines;
     }, 0);
