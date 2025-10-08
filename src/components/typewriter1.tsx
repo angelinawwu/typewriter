@@ -225,8 +225,8 @@ const Typewriter1 = () => {
            style={{
              position: "absolute",
              top: "7.5rem",
-             left: "10%",
-             right: "10%",
+             left: "27%",
+             right: "27%",
              zIndex: 1000,
              fontFamily: "Courier, monospace",
              fontSize: "1.2rem",
@@ -236,6 +236,7 @@ const Typewriter1 = () => {
              color: "#000",
              pointerEvents: "none",
              padding: "1rem",
+             textAlign: "left",
            }}
          >
            {typedText}
