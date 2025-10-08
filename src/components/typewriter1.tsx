@@ -53,6 +53,7 @@ import quote from "../assets/typewriter1/quote.png";
 import colonDot from "../assets/typewriter1/greaterthan.png";
 import comma from "../assets/typewriter1/lessthan.png";
 import fraction from "../assets/typewriter1/fraction.png";
+import paper from "../assets/paper1.png";
 
 const Typewriter1 = () => {
   const [pressedKeys, setPressedKeys] = useState<Set<number>>(new Set());
@@ -60,6 +61,7 @@ const Typewriter1 = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const keyboardImages = [
+    paper,
     base,
     a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z,
     space, enter, tab, capsLock, shiftL, shiftR,
@@ -132,23 +134,29 @@ const Typewriter1 = () => {
         onClick={handleClick}
         style={{ position: "relative" }}
       >
-        {keyboardImages.map((image, index) => (
-          <img
-            key={index}
-            src={image}
-            alt={`Keyboard key ${index}`}
-            style={{
-              position: "absolute",
-              top: pressedKeys.has(index) ? "3px" : "0px",
-              left: 0,
-              width: "auto",
-              height: "100%",
-              zIndex: index + 1,
-              pointerEvents: "none",
-              transition: "top 0.1s ease-in-out",
-            }}
-          />
-        ))}
+         {keyboardImages.map((image, index) => (
+           <img
+             key={index}
+             src={image}
+             alt={`Keyboard key ${index}`}
+             style={{
+               position: "absolute",
+               top: index === 0 
+                 ? pressedKeys.has(index) 
+                   ? "calc(8rem + 3px)" 
+                   : "6.5rem"
+                 : pressedKeys.has(index) 
+                   ? "3px" 
+                   : "0px",
+               left: 0,
+               width: "auto",
+               height: "100%",
+               zIndex: index + 1,
+               pointerEvents: "none",
+               transition: "top 0.1s ease-in-out",
+             }}
+           />
+         ))}
       </div>
       <canvas ref={canvasRef} style={{ display: "none" }} />
     </>
