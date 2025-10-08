@@ -6,9 +6,9 @@
 }
 
 .typewriter-container {
-  aspect-ratio: 1;
-  width: 100%;
-  height: 100%;
+  position: relative; /* needed for absolutely positioned layers */
+  width: 100vh; /* or whatever fixed width fits your design */
+  height: 100vh; /* same as above — adjust for your base image ratio */
   display: flex;
   align-items: center;
   justify-content: center;

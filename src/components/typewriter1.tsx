@@ -80,8 +80,7 @@ const Typewriter1 = () => {
             height: '100%',
             zIndex: index + 1,
             pointerEvents: 'none',
-            alignSelf: 'center',
-            justifySelf: 'center',
+            margin: '0 auto',
           }}
         />
       ))}
