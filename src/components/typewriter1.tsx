@@ -58,6 +58,7 @@ import paper from "../assets/paper1.png";
 const Typewriter1 = () => {
   const [pressedKeys, setPressedKeys] = useState<Set<number>>(new Set());
   const [images, setImages] = useState<HTMLImageElement[]>([]);
+  const [typedText, setTypedText] = useState<string>("");
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const keyboardImages = [
@@ -68,6 +69,45 @@ const Typewriter1 = () => {
     zero, one, two, three, four, five, six, seven, eight, nine,
     dash, equals, bracket, semicolon, colon, quote, colonDot, comma, fraction,
   ];
+
+  // Map index to character
+  const indexToChar: { [key: number]: string } = {
+    // Letters a-z (indices 2-27)
+    2: 'a', 3: 'b', 4: 'c', 5: 'd', 6: 'e', 7: 'f', 8: 'g', 9: 'h',
+    10: 'i', 11: 'j', 12: 'k', 13: 'l', 14: 'm', 15: 'n', 16: 'o', 17: 'p',
+    18: 'q', 19: 'r', 20: 's', 21: 't', 22: 'u', 23: 'v', 24: 'w', 25: 'x',
+    26: 'y', 27: 'z',
+    // Special keys
+    28: ' ',    // space
+    29: '\n',   // enter
+    30: '    ', // tab
+    // Numbers (indices 33-42)
+    33: '0', 34: '1', 35: '2', 36: '3', 37: '4',
+    38: '5', 39: '6', 40: '7', 41: '8', 42: '9',
+    // Symbols
+    43: '-',  // dash
+    44: '=',  // equals
+    45: '[',  // bracket
+    46: ';',  // semicolon
+    47: ':',  // colon
+    48: "'",  // quote
+    49: '>',  // greaterthan
+    50: '<',  // lessthan
+    51: '/',  // fraction
+  };
+
+  // Map keyboard keys to image indices
+  const keyToIndex: { [key: string]: number } = {
+    'a': 2, 'b': 3, 'c': 4, 'd': 5, 'e': 6, 'f': 7, 'g': 8, 'h': 9,
+    'i': 10, 'j': 11, 'k': 12, 'l': 13, 'm': 14, 'n': 15, 'o': 16, 'p': 17,
+    'q': 18, 'r': 19, 's': 20, 't': 21, 'u': 22, 'v': 23, 'w': 24, 'x': 25,
+    'y': 26, 'z': 27,
+    ' ': 28, 'Enter': 29, 'Tab': 30,
+    '0': 33, '1': 34, '2': 35, '3': 36, '4': 37,
+    '5': 38, '6': 39, '7': 40, '8': 41, '9': 42,
+    '-': 43, '=': 44, '[': 45, ';': 46, ':': 47,
+    "'": 48, '>': 49, '<': 50, '/': 51,
+  };
 
   // ✅ Preload all images once
   useEffect(() => {
@@ -89,7 +129,24 @@ const Typewriter1 = () => {
     loadAll();
   }, []);
 
+  // Handle physical keyboard input
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const key = e.key.toLowerCase();
+      const index = keyToIndex[key] || keyToIndex[e.key];
+      
+      if (index !== undefined) {
+        e.preventDefault();
+        handleKeyPress(index);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const handleKeyPress = (index: number) => {
+    // Visual key press animation
     setPressedKeys((prev) => new Set(prev).add(index));
     setTimeout(() => {
       setPressedKeys((prev) => {
@@ -98,6 +155,12 @@ const Typewriter1 = () => {
         return newSet;
       });
     }, 150);
+
+    // Add character to typed text
+    const char = indexToChar[index];
+    if (char !== undefined) {
+      setTypedText((prev) => prev + char);
+    }
   };
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -143,7 +206,7 @@ const Typewriter1 = () => {
                position: "absolute",
                top: index === 0 
                  ? pressedKeys.has(index) 
-                   ? "calc(8rem + 3px)" 
+                   ? "calc(6.5rem + 3px)" 
                    : "6.5rem"
                  : pressedKeys.has(index) 
                    ? "3px" 
@@ -157,6 +220,26 @@ const Typewriter1 = () => {
              }}
            />
          ))}
+         {/* Typed text overlay on paper */}
+         <div
+           style={{
+             position: "absolute",
+             top: "7.5rem",
+             left: "10%",
+             right: "10%",
+             zIndex: 1000,
+             fontFamily: "Courier, monospace",
+             fontSize: "1.2rem",
+             lineHeight: "1.8",
+             whiteSpace: "pre-wrap",
+             wordWrap: "break-word",
+             color: "#000",
+             pointerEvents: "none",
+             padding: "1rem",
+           }}
+         >
+           {typedText}
+         </div>
       </div>
       <canvas ref={canvasRef} style={{ display: "none" }} />
     </>
