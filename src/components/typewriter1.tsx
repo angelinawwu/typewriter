@@ -76,10 +76,12 @@ const Typewriter1 = () => {
             position: 'absolute',
             top: 0,
             left: 0,
-            width: '100%',
-            height: 'auto',
+            width: 'auto',
+            height: '100%',
             zIndex: index + 1,
-            pointerEvents: 'none'
+            pointerEvents: 'none',
+            alignSelf: 'center',
+            justifySelf: 'center',
           }}
         />
       ))}
