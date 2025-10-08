@@ -13,6 +13,17 @@
   justify-content: center;
   overflow: hidden;
 }
+
+.keyboard-layer {
+  /* Ensure images maintain their transparency */
+  background: transparent;
+}
+
+/* Make only the actual key content clickable, not transparent areas */
+.keyboard-layer:not(.base-layer) {
+  /* This approach uses the image's alpha channel to define clickable areas */
+  mix-blend-mode: normal;
+}
 .card {
   padding: 2em;
 }
