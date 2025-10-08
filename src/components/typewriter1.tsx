@@ -59,6 +59,7 @@ const Typewriter1 = () => {
   const [pressedKeys, setPressedKeys] = useState<Set<number>>(new Set());
   const [images, setImages] = useState<HTMLImageElement[]>([]);
   const [typedText, setTypedText] = useState<string>("");
+  const [lineCount, setLineCount] = useState<number>(0);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const keyboardImages = [
@@ -145,6 +146,21 @@ const Typewriter1 = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  // Track line breaks from text wrapping
+  useEffect(() => {
+    // Count total lines (including explicit newlines and wrapped lines)
+    const textLines = typedText.split('\n');
+    const totalLines = textLines.reduce((count, line) => {
+      // Estimate wrapped lines based on character count
+      // Adjust the divisor based on your text container width
+      const charsPerLine = 50; // approximate chars that fit per line
+      const wrappedLines = Math.ceil(line.length / charsPerLine) || 1;
+      return count + wrappedLines;
+    }, 0);
+    
+    setLineCount(totalLines - 1); // Subtract 1 because we start at line 0
+  }, [typedText]);
+
   const handleKeyPress = (index: number) => {
     // Visual key press animation
     setPressedKeys((prev) => new Set(prev).add(index));
@@ -206,17 +222,17 @@ const Typewriter1 = () => {
                position: "absolute",
                top: index === 0 
                  ? pressedKeys.has(index) 
-                   ? "calc(6.5rem + 3px)" 
-                   : "6.5rem"
+                   ? `calc(6.5rem - ${lineCount * 2.16}rem + 3px)` 
+                   : `calc(6.5rem - ${lineCount * 2.16}rem)`
                  : pressedKeys.has(index) 
-                   ? "3px" 
+                   ? "5px" 
                    : "0px",
                left: 0,
                width: "auto",
                height: "100%",
                zIndex: index + 1,
                pointerEvents: "none",
-               transition: "top 0.1s ease-in-out",
+               transition: "top 0.3s ease-out",
              }}
            />
          ))}
@@ -224,7 +240,7 @@ const Typewriter1 = () => {
          <div
            style={{
              position: "absolute",
-             top: "7.5rem",
+             top: `calc(12rem - ${lineCount * 2.16}rem)`,
              left: "27%",
              right: "27%",
              zIndex: 1000,
@@ -237,6 +253,7 @@ const Typewriter1 = () => {
              pointerEvents: "none",
              padding: "1rem",
              textAlign: "left",
+             transition: "top 0.3s ease-out",
            }}
          >
            {typedText}
