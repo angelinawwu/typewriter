@@ -1,5 +1,3 @@
-import { useState } from 'react'
-
 import './App.css'
 import Typewriter1 from './components/typewriter1'
 
