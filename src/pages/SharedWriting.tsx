@@ -19,6 +19,13 @@ const SharedWriting: React.FC = () => {
   const fetchWriting = async (writingId: string) => {
     try {
       setLoading(true)
+      
+      if (!supabase) {
+        setError('Database not configured')
+        setLoading(false)
+        return
+      }
+      
       const { data, error } = await supabase
         .from('writings')
         .select('*')

@@ -19,6 +19,13 @@ const Gallery: React.FC = () => {
   const fetchWritings = async () => {
     try {
       setLoading(true)
+      
+      if (!supabase) {
+        setError('Database not configured')
+        setLoading(false)
+        return
+      }
+      
       const { data, error } = await supabase
         .from('writings')
         .select('*')

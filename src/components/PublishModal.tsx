@@ -18,6 +18,12 @@ const PublishModal: React.FC<PublishModalProps> = ({ isOpen, onClose, content, o
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!supabase) {
+      setError('Publishing is currently unavailable. Please configure Supabase.')
+      return
+    }
+    
     // Name is optional; if provided, moderate it
     if (authorName.trim()) {
       const nameModeration = moderateContent(authorName)
