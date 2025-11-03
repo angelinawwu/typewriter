@@ -6,6 +6,8 @@ An ambient, single-page typewriter where anyone can write a page and publish it 
 - Visit the app: [typewriter-blush.vercel.app](https://typewriter-blush.vercel.app/)
 - Best viewed on desktop
 
+![Preview Image](./public/demo.png)
+
 ## Features
 
 ### Writing
@@ -41,4 +43,4 @@ An ambient, single-page typewriter where anyone can write a page and publish it 
 - Different fonts/colors
 - Different typewriter variations
 - Sound effects
-- Improved mobile interface
+- Improve mobile interface
