@@ -302,6 +302,7 @@ const Typewriter1 = () => {
              padding: "1rem",
              paddingTop: "7rem",
              textAlign: "left",
+             transition: "top 0.3s ease-out",
            }}
          >
            {typedText}
