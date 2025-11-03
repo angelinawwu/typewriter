@@ -1,102 +1,44 @@
-# Typewriter Simulator
+## Typewriter
 
-An interactive typewriter web application built with React, TypeScript, and Vite. Experience the nostalgia of typing on a mechanical typewriter with dubious accuracy.
+An ambient, single-page typewriter where anyone can write a page and publish it to a public gallery. Built with React + TypeScript + Vite, Supabase for storage, and a focus on tactile UI.
 
-![Typewriter Demo](./public/demo.png)
+### Live Site
+- Visit the app: [typewriter-blush.vercel.app](https://typewriter-blush.vercel.app/)
+- Best viewed on desktop
 
 ## Features
 
-### 🎹 Interactive Typing
-- **Click-to-Type**: Click on individual typewriter keys to type
-- **Keyboard Support**: Use your physical keyboard to type naturally
-- **Visual Feedback**: Keys animate with press-down and paper movement effects when clicked or typed
+### Writing
+- **Click or type**: On-screen keys and physical keyboard input
+- **No backspace**: True to the brief; use Clear to start over
+- **12-line hard cap**: One page only
+- **Paper movement**: Paper and text advance together on line breaks
 
-### 🎨 Designed to Delight
-- Hand-drawn layered PNGs to create typewriter image
-- Courier font for authentic typewriter text
-- Transparent key overlays with pixel-perfect click detection
+### Publishing & Gallery
+- **Publish to public gallery**: Name is optional and moderated
+- **Client-side moderation**: Profanity filtered for name and text
+- **Shareable links**: `/writing/:id` routes for individual works
+- **Gallery previews**: Mini papers with scaled text; click to enlarge
 
-### ⌨️ Full Character Support
-- **Letters**: a-z
-- **Numbers**: 0-9
-- **Special Characters**: `-`, `=`, `[`, `;`, `:`, `'`, `>`, `<`, `/`
-- **Function Keys**: Space, Enter, Tab, Caps Lock, Shift
-- **NOTE**: no backspace. 100% authentic experience
+### Designed to Delight
+- **Floating nav**: Top-right, transparent, zero layout height
+- **Bottom-left controls**: Publish and Clear
+- **Geist Mono**: Global font for all text
+- **Publish animation**: Paper + text float up (≤1s, ease-in)
+- **Reduced motion**: Respects `prefers-reduced-motion`
 
 ## Tech Stack
 
-- React
-- TypeScript
-- Vite
-- CSS3
+- React, TypeScript, Vite
+- Supabase (PostgreSQL, REST)
+- React Router
+- bad-words (client-side moderation)
+- @fontsource/geist-mono, @phosphor-icons/react
 
-## Getting Started
+## Future Updates
 
-### Prerequisites
-
-- Node.js 18.20.8 or higher (20.19+ recommended)
-- npm 10.8.2 or higher
-
-### Installation
-
-1. Clone the repository
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Start the development server:
-```bash
-npm run dev
-```
-
-4. Open your browser and navigate to `http://localhost:5173`
-
-## Project Structure
-
-```
-typewriter/
-├── src/
-│   ├── assets/
-│   │   ├── paper1.png           # Paper image
-│   │   └── typewriter1/         # Keyboard key images
-│   │       ├── base.png         # Keyboard base
-│   │       ├── a.png - z.png    # Letter keys
-│   │       ├── 0.png - 9.png    # Number keys
-│   │       ├── space.png        # Special keys
-│   │       └── ...
-│   ├── components/
-│   │   └── typewriter1.tsx      # Main typewriter component
-│   ├── App.tsx                  # Root component
-│   ├── App.css                  # Application styles
-│   └── main.tsx                 # Application entry point
-├── package.json
-└── vite.config.ts
-```
-
-## How It Works
-
-### Click Detection Algorithm
-
-The typewriter uses an advanced pixel-detection algorithm to ensure only actual key content (not transparent areas) is clickable:
-
-1. **Image Preloading**: All keyboard images are preloaded on component mount
-2. **Canvas Analysis**: On click, a temporary canvas analyzes the pixel at the click coordinates
-3. **Alpha Channel Check**: If the pixel has transparency (alpha = 0), the click passes through to lower layers
-4. **Layer Traversal**: The algorithm checks from topmost layer down until it finds a non-transparent pixel
-5. **Key Press Trigger**: Only when clicking on actual key content does the key press animation trigger
-
-
-## Future Enhancements
-
-- [ ] Sound effects for typing
-- [ ] Mobile touch support for clicking keys
-- [ ] Save/export typed text
-- [ ] Multiple paper styles
-- [ ] Typewriter color themes
-- [ ] Carriage return bell sound
-- [ ] Print functionality
-
-
-Made with ❤️ and nostalgia by Angelina Wu
+- Improved profanity detection
+- Different fonts/colors
+- Different typewriter variations
+- Sound effects
+- Improved mobile interface
