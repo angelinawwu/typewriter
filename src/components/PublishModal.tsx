@@ -103,10 +103,7 @@ const PublishModal: React.FC<PublishModalProps> = ({ isOpen, onClose, content, o
           )}
 
           <div className="modal-actions">
-            <button type="button" onClick={onClose} disabled={isSubmitting}>
-              Cancel
-            </button>
-            <button type="submit" disabled={isSubmitting || !content.trim()}>
+            <button className="publish-btn" type="submit" disabled={isSubmitting || !content.trim()}>
               {isSubmitting ? 'Publishing...' : 'Publish'}
             </button>
           </div>
