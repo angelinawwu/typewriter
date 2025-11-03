@@ -130,23 +130,23 @@
   overflow: hidden;
 }
 
-.paper-stage,
+.typewriter-text,
 img.publishing {
   will-change: transform;
   transition: transform 1s cubic-bezier(.550, .055, .675, .19);
 }
 
-.paper-stage.publishing,
+.typewriter-text.publishing,
 img.publishing {
   transform: translateY(-120vh);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .paper-stage,
+  .typewriter-text,
   img.publishing {
     transition: none;
   }
-  .paper-stage.publishing,
+  .typewriter-text.publishing,
   img.publishing {
     transform: none;
   }

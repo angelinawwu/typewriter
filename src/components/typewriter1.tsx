@@ -286,10 +286,10 @@ const Typewriter1 = () => {
          ))}
          {/* Typed text overlay on paper */}
          <div
-           className={`paper-stage ${isPublishingAnim ? 'publishing' : ''}`}
+           className={`typewriter-text ${isPublishingAnim ? 'publishing' : ''}`}
            style={{
              position: "absolute",
-             top: `calc(12rem - ${lineCount * 2.16}rem)`,
+             top: `calc(6.5rem - ${lineCount * 2.16}rem)`,
              left: "27%",
              right: "27%",
              zIndex: 1000,
@@ -300,6 +300,7 @@ const Typewriter1 = () => {
              color: "#000",
              pointerEvents: "none",
              padding: "1rem",
+             paddingTop: "7rem",
              textAlign: "left",
            }}
          >
