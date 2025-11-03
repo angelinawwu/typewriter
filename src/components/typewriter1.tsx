@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import PublishModal from "./PublishModal";
 
 // --- imports (same as your code above) ---
 import base from "../assets/typewriter1/base.png";
@@ -60,7 +61,11 @@ const Typewriter1 = () => {
   const [images, setImages] = useState<HTMLImageElement[]>([]);
   const [typedText, setTypedText] = useState<string>("");
   const [lineCount, setLineCount] = useState<number>(0);
+  const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
+  const [isPublishingAnim, setIsPublishingAnim] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  const MAX_LINES = 12;
 
   const keyboardImages = [
     paper,
@@ -92,8 +97,8 @@ const Typewriter1 = () => {
     46: ';',  // semicolon
     47: ':',  // colon
     48: "'",  // quote
-    49: '>',  // greaterthan
-    50: '<',  // lessthan
+    49: '.',  // period
+    50: ',',  // comma
     51: '/',  // fraction
   };
 
@@ -107,7 +112,7 @@ const Typewriter1 = () => {
     '0': 33, '1': 34, '2': 35, '3': 36, '4': 37,
     '5': 38, '6': 39, '7': 40, '8': 41, '9': 42,
     '-': 43, '=': 44, '[': 45, ';': 46, ':': 47,
-    "'": 48, '>': 49, '<': 50, '/': 51,
+    "'": 48, '.': 49, ',': 50, '/': 51,
   };
 
   // ✅ Preload all images once
@@ -130,9 +135,14 @@ const Typewriter1 = () => {
     loadAll();
   }, []);
 
-  // Handle physical keyboard input
+  // Handle physical keyboard input (no backspace)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't handle typing when modal is open
+      if (isPublishModalOpen) {
+        return;
+      }
+
       const key = e.key.toLowerCase();
       const index = keyToIndex[key] || keyToIndex[e.key];
       
@@ -144,7 +154,7 @@ const Typewriter1 = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [isPublishModalOpen]);
 
   // Track line breaks from text wrapping
   useEffect(() => {
@@ -162,6 +172,11 @@ const Typewriter1 = () => {
   }, [typedText]);
 
   const handleKeyPress = (index: number) => {
+    // Check line limit before adding character
+    if (lineCount >= MAX_LINES) {
+      return; // Block input when at line limit
+    }
+
     // Visual key press animation
     setPressedKeys((prev) => new Set(prev).add(index));
     setTimeout(() => {
@@ -206,8 +221,40 @@ const Typewriter1 = () => {
     }
   };
 
+  const handleClear = () => {
+    setTypedText("");
+  };
+
+  const handlePublishSuccess = () => {
+    setIsPublishModalOpen(false);
+    setIsPublishingAnim(true);
+    // Clear after animation completes
+    window.setTimeout(() => {
+      setTypedText("");
+      setIsPublishingAnim(false);
+    }, 900);
+  };
+
   return (
     <>
+      {/* Bottom-left Controls */}
+      <div className="bottom-controls">
+        <button 
+          onClick={handleClear} 
+          disabled={!typedText.trim()}
+          className="clear-btn"
+        >
+          Clear
+        </button>
+        <button 
+          onClick={() => setIsPublishModalOpen(true)} 
+          disabled={!typedText.trim()}
+          className="publish-btn"
+        >
+          Publish
+        </button>
+      </div>
+
       <div
         className="typewriter-container"
         onClick={handleClick}
@@ -218,6 +265,7 @@ const Typewriter1 = () => {
              key={index}
              src={image}
              alt={`Keyboard key ${index}`}
+             className={index === 0 && isPublishingAnim ? 'publishing' : ''}
              style={{
                position: "absolute",
                top: index === 0 
@@ -238,13 +286,13 @@ const Typewriter1 = () => {
          ))}
          {/* Typed text overlay on paper */}
          <div
+           className={`paper-stage ${isPublishingAnim ? 'publishing' : ''}`}
            style={{
              position: "absolute",
              top: `calc(12rem - ${lineCount * 2.16}rem)`,
              left: "27%",
              right: "27%",
              zIndex: 1000,
-             fontFamily: "Courier, monospace",
              fontSize: "1.2rem",
              lineHeight: "1.8",
              whiteSpace: "pre-wrap",
@@ -253,13 +301,19 @@ const Typewriter1 = () => {
              pointerEvents: "none",
              padding: "1rem",
              textAlign: "left",
-             transition: "top 0.3s ease-out",
            }}
          >
            {typedText}
          </div>
       </div>
       <canvas ref={canvasRef} style={{ display: "none" }} />
+      
+      <PublishModal
+        isOpen={isPublishModalOpen}
+        onClose={() => setIsPublishModalOpen(false)}
+        content={typedText}
+        onSuccess={handlePublishSuccess}
+      />
     </>
   );
 };
