@@ -4,6 +4,7 @@ import Typewriter1 from './components/typewriter1'
 import Gallery from './components/Gallery'
 import SharedWriting from './pages/SharedWriting'
 import { ArrowUpRight } from '@phosphor-icons/react'
+import { Analytics } from '@vercel/analytics/react';
 
 function Nav() {
   const location = useLocation()
@@ -22,6 +23,7 @@ function App() {
   return (
     <Router>
       <div className="app">
+        <Analytics />
         <Nav />
         
         <main className="app-main">
