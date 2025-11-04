@@ -77,13 +77,15 @@ const PublishModal: React.FC<PublishModalProps> = ({ isOpen, onClose, content, o
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="authorName">Your Name:</label>
+            <label htmlFor="authorName">
+              Nickname: <span className="optional-label">(optional)</span>
+            </label>
             <input
               id="authorName"
               type="text"
               value={authorName}
               onChange={(e) => setAuthorName(e.target.value)}
-              placeholder="Enter your name"
+              placeholder="Enter your nickname"
               maxLength={50}
               
             />

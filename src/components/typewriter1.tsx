@@ -300,7 +300,7 @@ const Typewriter1 = () => {
              color: "#000",
              pointerEvents: "none",
              padding: "1rem",
-             paddingTop: "7rem",
+             paddingTop: "6.5rem",
              textAlign: "left",
              transition: "top 0.3s ease-out",
            }}
