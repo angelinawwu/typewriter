@@ -502,15 +502,19 @@ img.publishing {
 
 .pagination button {
   padding: 0.5rem 1rem;
-  border: 1px solid #ddd;
   border-radius: 4px;
-  background: white;
+  background: #412C23;
+  color: #E1DDD5;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
+.pagination span {
+  color: #412C23;
+}
+
 .pagination button:hover:not(:disabled) {
-  background: #f8f9fa;
+  background: #7E5D4F;
 }
 
 .pagination button:disabled {
