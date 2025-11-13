@@ -10,7 +10,7 @@ const Gallery: React.FC = () => {
   const [error, setError] = useState('')
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 10
+  const itemsPerPage = 12
 
   useEffect(() => {
     fetchWritings()
