@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { supabase, type Writing } from '../lib/supabase'
 import { ArrowLeft } from '@phosphor-icons/react'
-import paper from '../assets/paper1.png'
+import paper from '../assets/paper1.webp'
 
 const SharedWriting: React.FC = () => {
   const { id } = useParams<{ id: string }>()

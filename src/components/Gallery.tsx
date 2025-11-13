@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase, type Writing } from '../lib/supabase'
-import paper from '../assets/paper1.png'
+import paper from '../assets/paper1.webp'
 import { ArrowLeft } from '@phosphor-icons/react'
 
 const Gallery: React.FC = () => {
