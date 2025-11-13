@@ -127,11 +127,6 @@ const Typewriter1 = () => {
         img.crossOrigin = "anonymous";
         img.decoding = "async"; // Async decode for better performance
         
-        // On mobile, reduce image dimensions to save memory
-        if (isMobile.current) {
-          img.loading = "lazy";
-        }
-        
         img.src = src;
         img.onload = () => {
           imageCache.current.set(index, img);
