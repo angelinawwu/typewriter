@@ -63,7 +63,11 @@ const Typewriter1 = () => {
   const [lineCount, setLineCount] = useState<number>(0);
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
   const [isPublishingAnim, setIsPublishingAnim] = useState(false);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [isFullyLoaded, setIsFullyLoaded] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const imageCache = useRef<Map<number, HTMLImageElement>>(new Map());
+  const isMobile = useRef(window.innerWidth <= 768 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
 
   const MAX_LINES = 12;
 
@@ -115,24 +119,68 @@ const Typewriter1 = () => {
     "'": 48, '.': 49, ',': 50, '/': 51,
   };
 
-  // ✅ Preload all images once
+  // ✅ Load all images progressively in batches to prevent memory spike
   useEffect(() => {
-    const loadAll = async () => {
-      const loaded = await Promise.all(
-        keyboardImages.map(
-          (src) =>
-            new Promise<HTMLImageElement>((resolve, reject) => {
-              const img = new Image();
-              img.crossOrigin = "anonymous"; // prevent canvas taint
-              img.src = src;
-              img.onload = () => resolve(img);
-              img.onerror = reject;
-            })
-        )
-      );
-      setImages(loaded);
+    const loadImage = (src: string, index: number): Promise<HTMLImageElement> => {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.decoding = "async"; // Async decode for better performance
+        
+        // On mobile, reduce image dimensions to save memory
+        if (isMobile.current) {
+          img.loading = "lazy";
+        }
+        
+        img.src = src;
+        img.onload = () => {
+          imageCache.current.set(index, img);
+          resolve(img);
+        };
+        img.onerror = reject;
+      });
     };
-    loadAll();
+
+    const loadImagesProgressively = async () => {
+      const imageArray = new Array(keyboardImages.length);
+      let loadedCount = 0;
+      
+      // Load critical images first (paper and base)
+      const criticalIndices = [0, 1];
+      await Promise.all(
+        criticalIndices.map(async (index) => {
+          const img = await loadImage(keyboardImages[index], index);
+          imageArray[index] = img;
+          loadedCount++;
+        })
+      );
+      setImages([...imageArray]);
+      setLoadingProgress(Math.round((loadedCount / keyboardImages.length) * 100));
+
+      // Load remaining images in smaller batches with delays
+      // Smaller batches on mobile to prevent memory spikes
+      const batchSize = isMobile.current ? 5 : 10;
+      const delayBetweenBatches = isMobile.current ? 100 : 50;
+      
+      for (let i = 2; i < keyboardImages.length; i += batchSize) {
+        const batch = [];
+        for (let j = i; j < Math.min(i + batchSize, keyboardImages.length); j++) {
+          batch.push(loadImage(keyboardImages[j], j).then(img => {
+            imageArray[j] = img;
+            loadedCount++;
+          }));
+        }
+        await Promise.all(batch);
+        setImages([...imageArray]); // Update after each batch
+        setLoadingProgress(Math.round((loadedCount / keyboardImages.length) * 100));
+        // Small delay between batches to prevent overwhelming the browser
+        await new Promise(resolve => setTimeout(resolve, delayBetweenBatches));
+      }
+      
+      setIsFullyLoaded(true);
+    };
+
+    loadImagesProgressively();
   }, []);
 
   // Handle physical keyboard input (no backspace)
@@ -203,22 +251,38 @@ const Typewriter1 = () => {
     const y = e.clientY - rect.top;
 
     const canvas = canvasRef.current!;
-    const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
-    canvas.width = rect.width;
-    canvas.height = rect.height;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext("2d", { 
+      willReadFrequently: true,
+      alpha: true,
+      desynchronized: true // Better performance for frequent updates
+    });
+    if (!ctx) return;
+
+    // Limit canvas size on mobile to reduce memory usage
+    const maxDimension = isMobile.current ? 800 : 2000;
+    const scale = Math.min(1, maxDimension / Math.max(rect.width, rect.height));
+    canvas.width = rect.width * scale;
+    canvas.height = rect.height * scale;
 
     // Check from topmost image down
     for (let i = images.length - 1; i >= 1; i--) {
       const img = images[i];
+      if (!img) continue; // Skip if image not loaded
+      
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0, rect.width, rect.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-      const pixel = ctx.getImageData(x, y, 1, 1).data;
+      const pixel = ctx.getImageData(x * scale, y * scale, 1, 1).data;
       if (pixel[3] > 0) {
         handleKeyPress(i);
         break;
       }
     }
+
+    // Clear canvas after use to free memory
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
   };
 
   const handleClear = () => {
@@ -237,6 +301,40 @@ const Typewriter1 = () => {
 
   return (
     <>
+      {/* Loading indicator */}
+      {!isFullyLoaded && (
+        <div style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 10002,
+          textAlign: 'center',
+          background: '#E1DDD5',
+          padding: '2rem',
+          borderRadius: '8px',
+          border: '1px solid #412C23',
+        }}>
+          <div style={{ marginBottom: '1rem', color: '#412C23' }}>
+            Loading typewriter... {loadingProgress}%
+          </div>
+          <div style={{
+            width: '200px',
+            height: '8px',
+            background: '#F0EDE7',
+            borderRadius: '4px',
+            overflow: 'hidden',
+          }}>
+            <div style={{
+              width: `${loadingProgress}%`,
+              height: '100%',
+              background: '#412C23',
+              transition: 'width 0.3s ease-out',
+            }} />
+          </div>
+        </div>
+      )}
+
       {/* Bottom-left Controls */}
       <div className="bottom-controls">
         <button 
@@ -258,32 +356,40 @@ const Typewriter1 = () => {
       <div
         className="typewriter-container"
         onClick={handleClick}
-        style={{ position: "relative" }}
+        style={{ position: "relative", opacity: isFullyLoaded ? 1 : 0.3 }}
       >
-         {keyboardImages.map((image, index) => (
-           <img
-             key={index}
-             src={image}
-             alt={`Keyboard key ${index}`}
-             className={index === 0 && isPublishingAnim ? 'publishing' : ''}
-             style={{
-               position: "absolute",
-               top: index === 0 
-                 ? pressedKeys.has(index) 
-                   ? `calc(6.5rem - ${lineCount * 2.16}rem + 3px)` 
-                   : `calc(6.5rem - ${lineCount * 2.16}rem)`
-                 : pressedKeys.has(index) 
-                   ? "5px" 
-                   : "0px",
-               left: 0,
-               width: "auto",
-               height: "100%",
-               zIndex: index + 1,
-               pointerEvents: "none",
-               transition: "top 0.3s ease-out",
-             }}
-           />
-         ))}
+         {keyboardImages.map((image, index) => {
+           // Skip rendering if image not loaded yet
+           const loadedImage = images[index];
+           if (!loadedImage) return null;
+
+           return (
+             <img
+               key={index}
+               src={image}
+               alt={`Keyboard key ${index}`}
+               loading={index > 1 ? "lazy" : "eager"}
+               decoding="async"
+               className={index === 0 && isPublishingAnim ? 'publishing' : ''}
+               style={{
+                 position: "absolute",
+                 top: index === 0 
+                   ? pressedKeys.has(index) 
+                     ? `calc(6.5rem - ${lineCount * 2.16}rem + 3px)` 
+                     : `calc(6.5rem - ${lineCount * 2.16}rem)`
+                   : pressedKeys.has(index) 
+                     ? "5px" 
+                     : "0px",
+                 left: 0,
+                 width: "auto",
+                 height: "100%",
+                 zIndex: index + 1,
+                 pointerEvents: "none",
+                 transition: "top 0.3s ease-out",
+               }}
+             />
+           );
+         })}
          {/* Typed text overlay on paper */}
          <div
            className={`typewriter-text ${isPublishingAnim ? 'publishing' : ''}`}
