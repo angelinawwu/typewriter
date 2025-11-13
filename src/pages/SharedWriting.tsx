@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { supabase, type Writing } from '../lib/supabase'
 import { ArrowLeft } from '@phosphor-icons/react'
-import paper from '../assets/paper1.webp'
+// Detect mobile for image optimization
+const isMobileDevice = window.innerWidth <= 768 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+import paperDesktop from '../assets/paper1.webp';
+import paperMobile from '../assets/paper1-mobile.webp';
+const paper = isMobileDevice ? paperMobile : paperDesktop;
 
 const SharedWriting: React.FC = () => {
   const { id } = useParams<{ id: string }>()
