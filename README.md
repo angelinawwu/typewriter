@@ -3,7 +3,7 @@
 An ambient, single-page typewriter where anyone can write a page and publish it to a public gallery. Built with React + TypeScript + Vite, Supabase for storage, and a focus on tactile UI.
 
 ### Live Site
-- Visit the app: [typewriter-blush.vercel.app](https://typewriter-blush.vercel.app/)
+- Visit the app: [digitaltypewriter.vercel.app](https://digitaltypewriter.vercel.app/)
 - Best viewed on desktop
 
 ![Preview Image](./public/demo.png)
