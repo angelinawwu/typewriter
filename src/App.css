@@ -232,7 +232,7 @@ img.publishing {
   font-size: 1rem;
   background: #F0EDE7;
   color: #412C23;
-  font-family: 'Geist Mono', monospace;
+  font-family: 'PT Mono', monospace;
 }
 
 .content-preview {
@@ -240,7 +240,7 @@ img.publishing {
   padding: 1rem;
   border-radius: 4px;
   border: 1px solid #412C23;
-  font-family: 'Geist Mono', monospace;
+  font-family: 'PT Mono', monospace;
   white-space: pre-wrap;
   text-align: left;
   background-color: #F0EDE7;
@@ -581,7 +581,7 @@ img.publishing {
   left: 25%;
   right: 25%;
   bottom: 27%;
-  font-family: 'Geist Mono', monospace;
+  font-family: 'PT Mono', monospace;
   font-size: 1rem;
   line-height: 1.8;
   color: #333;
