@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { supabase } from '../lib/supabase'
+import { createWriting } from '../lib/sheets'
 import { moderateContent } from '../lib/moderation'
 
 interface PublishModalProps {
@@ -18,13 +18,7 @@ const PublishModal: React.FC<PublishModalProps> = ({ isOpen, onClose, content, o
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
-    if (!supabase) {
-      setError('Publishing is currently unavailable. Please configure Supabase.')
-      return
-    }
-    
-    // Name is optional; if provided, moderate it
+
     if (authorName.trim()) {
       const nameModeration = moderateContent(authorName)
       if (!nameModeration.isClean) {
@@ -37,7 +31,6 @@ const PublishModal: React.FC<PublishModalProps> = ({ isOpen, onClose, content, o
     setError('')
 
     try {
-      // Check content moderation
       const moderation = moderateContent(content)
       if (!moderation.isClean) {
         setError('Content contains inappropriate language. Please revise your text.')
@@ -45,20 +38,7 @@ const PublishModal: React.FC<PublishModalProps> = ({ isOpen, onClose, content, o
         return
       }
 
-      // Submit to Supabase
-      const { error: insertError } = await supabase
-        .from('writings')
-        .insert([
-          {
-            author_name: authorName.trim(),
-            content: content.trim(),
-            is_flagged: false
-          }
-        ])
-
-      if (insertError) {
-        throw insertError
-      }
+      await createWriting(authorName.trim(), content.trim())
 
       onSuccess()
       setAuthorName('')

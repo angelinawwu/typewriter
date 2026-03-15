@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { supabase, type Writing } from '../lib/supabase'
+import { fetchWritings, type Writing } from '../lib/sheets'
 // Detect mobile for image optimization
 const isMobileDevice = window.innerWidth <= 768 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 import paperDesktop from '../assets/paper1.webp';
@@ -17,27 +17,14 @@ const Gallery: React.FC = () => {
   const itemsPerPage = 12
 
   useEffect(() => {
-    fetchWritings()
+    loadWritings()
   }, [])
 
-  const fetchWritings = async () => {
+  const loadWritings = async () => {
     try {
       setLoading(true)
-      
-      if (!supabase) {
-        setError('Database not configured')
-        setLoading(false)
-        return
-      }
-      
-      const { data, error } = await supabase
-        .from('writings')
-        .select('*')
-        .eq('is_flagged', false)
-        .order('created_at', { ascending: false })
-
-      if (error) throw error
-      setWritings(data || [])
+      const data = await fetchWritings()
+      setWritings(data)
     } catch (err) {
       console.error('Error fetching writings:', err)
       setError('Failed to load writings')
@@ -89,7 +76,7 @@ const Gallery: React.FC = () => {
       <div className="gallery-container">
         <h1>Published Writings</h1>
         <div className="error">{error}</div>
-        <button onClick={fetchWritings}>Try Again</button>
+        <button onClick={loadWritings}>Try Again</button>
       </div>
     )
   }

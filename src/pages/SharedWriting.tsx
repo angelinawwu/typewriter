@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { supabase, type Writing } from '../lib/supabase'
+import { fetchWritingById, type Writing } from '../lib/sheets'
 import { ArrowLeft } from '@phosphor-icons/react'
 // Detect mobile for image optimization
 const isMobileDevice = window.innerWidth <= 768 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -23,21 +23,7 @@ const SharedWriting: React.FC = () => {
   const fetchWriting = async (writingId: string) => {
     try {
       setLoading(true)
-      
-      if (!supabase) {
-        setError('Database not configured')
-        setLoading(false)
-        return
-      }
-      
-      const { data, error } = await supabase
-        .from('writings')
-        .select('*')
-        .eq('id', writingId)
-        .eq('is_flagged', false)
-        .single()
-
-      if (error) throw error
+      const data = await fetchWritingById(writingId)
       setWriting(data)
     } catch (err) {
       console.error('Error fetching writing:', err)
